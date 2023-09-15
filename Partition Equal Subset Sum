@@ -1,0 +1,43 @@
+class Solution {
+    static int equalPartition(int N, int arr[]) {
+        int totalSum = 0;
+
+        // Calculate the total sum of the array
+        for (int i = 0; i < N; i++) {
+            totalSum += arr[i];
+        }
+
+        // If the total sum is odd, it's impossible to partition the array into two equal parts
+        if (totalSum % 2 != 0) {
+            return 0;
+        }
+
+        // Calculate the target sum for each partition
+        int targetSum = totalSum / 2;
+
+        // Create a 2D DP array dp[i][j] where dp[i][j] represents whether it's possible to get a sum of j
+        // using the first i elements of the array
+        boolean[][] dp = new boolean[N + 1][targetSum + 1];
+
+        // Initialize the first column as true because it's always possible to get a sum of 0
+        for (int i = 0; i <= N; i++) {
+            dp[i][0] = true;
+        }
+
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= targetSum; j++) {
+                // If the current element (arr[i-1]) is greater than the current sum (j),
+                // we can't include it in the partition
+                if (arr[i - 1] > j) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    // Otherwise, we have two choices: include the current element or exclude it
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - arr[i - 1]];
+                }
+            }
+        }
+
+        // If dp[N][targetSum] is true, it means it's possible to partition the array into two equal parts
+        return dp[N][targetSum] ? 1 : 0;
+    }
+}
